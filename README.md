@@ -1,6 +1,8 @@
 TodayCMS
 ===========
 
+[View the TodayCMS API Documention](https://github.com/justinwalsh/todaycms/wiki)
+
 TodayCMS is...
 - a fast and flexible CMS development platform for developers
 - a clean and easy to use content management system for the end user

@@ -1,5 +1,7 @@
-TodayLaunch
+TodayCMS
 ===========
 
-TodayLaunch is a development and marketing platform for web designers to make their lives easier, their clients happier, and their businesses more profitable. This is where you learn how to make the magic happen. 
-
+TodayCMS is...
+- a fast and flexible CMS development platform for developers
+- a clean and easy to use content management system for the end user
+- a data-management system for websites, mobile devices, and web applications that is delivered through a JSON-based API

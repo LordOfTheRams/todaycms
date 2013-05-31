@@ -1,8 +1,9 @@
-#API
+#TodayCMS Documentation
+
+##API
 The api is the server endpoint for creating, reading, updating and deleting objects from collections in the database.
 
-Authentication
-======
+###Authentication
 
 All calls to the api must include a _token parameter to validate the call.
 
@@ -10,7 +11,7 @@ All calls to the api must include a _token parameter to validate the call.
 
 This guide will not include the _token in the sample calls. It is implied that it must be included.
 
-##Example Config
+###Example Config
 The following collection config will be used as the config throughout the example calls in this guide.
 
 	{
@@ -43,8 +44,7 @@ The following collection config will be used as the config throughout the exampl
 		}
 	}
 
-Create
-======
+###Create
 
 To create an object in a collection, issue a HTTP POST call with the object in the body of the POST.
 
@@ -72,8 +72,7 @@ Note: 'team' is the key used in our example config at the top of this guide
 
 The object you just created.
 
-Read
-======
+###Read
 
 To read from a collection, issue a HTTP GET call
 
@@ -88,7 +87,8 @@ To read from a collection, issue a HTTP GET call
 
 An array of objects from the collection.
 
-##Filtering
+###Filtering
+
 To filter an api call, send the optional `filter` parameter. The filter parameter is a structured json object. Examples use the following terms:
 
 * field key - Is the key used to define the field in the config.
@@ -239,8 +239,7 @@ The JSON object used for the `filter` parameter must be url encoded when calling
 
 	var escaped_json_from_object = escape(JSON.stringify({"name": {"LIKE":"Justin%", "!=":"Justin Walsh"}}));
 
-Update
-======
+###Update
 
 To update an object in a collection, issue a HTTP POST call with the object in the body of the POST.
 
@@ -262,10 +261,10 @@ To update an object in a collection, issue a HTTP POST call with the object in t
 The object you just updated.
 
 
-#Editor
+##Editor
 The editor is an embedable tool, for creating and updating objects in a collection
 
-## Install
+### Install
 To create an editor on a page use the following code
 
 	<div id="cms-editor"></div>
@@ -279,11 +278,11 @@ To create an editor on a page use the following code
 
 ***Required***: 'apikey' and 'collection' are required parameters for the editor to load.
 
-## Setup
+### Setup
 
 There are several customizations that can be made to the 'cms_setup' function.
 
-###id
+####id
 Used to update an existing record.
 
 	<script type='text/javascript'>
@@ -294,7 +293,7 @@ Used to update an existing record.
 		});
 	</script>
 
-###config
+####config
 Overrides the collections configuration for only this editor.
 
 In this example we are changing the visibility of the account field:
@@ -313,7 +312,7 @@ In this example we are changing the visibility of the account field:
 		});
 	</script>
 
-###data
+####data
 Overrides the data for this object
 
 	<script type='text/javascript'>
@@ -326,7 +325,7 @@ Overrides the data for this object
 		});
 	</script>
 
-###before_save
+####before_save
 Function that is called before the object is saved to the api. It recieves a complete json copy of the object. Use this to make any modifications to the object before it is saved. If you return false, the save will be canceled, this is usefully for valdation errors.
 
 	<script type='text/javascript'>
@@ -344,7 +343,7 @@ Function that is called before the object is saved to the api. It recieves a com
 		});
 	</script>
 
-###after_save
+####after_save
 Function that is called after the object has been saved. It recieves a complete json copy of the object that was just saved to the database.
 
 	<script type='text/javascript'>
@@ -357,7 +356,7 @@ Function that is called after the object has been saved. It recieves a complete 
 		});
 	</script>
 
-###bootstrap
+####bootstrap
 Enable or disable the bootstrap css. Useful if bootstrap has already been loaded on the page.
 
 	<script type='text/javascript'>
@@ -368,7 +367,7 @@ Enable or disable the bootstrap css. Useful if bootstrap has already been loaded
 		});
 	</script>
 
-###theme
+####theme
 Sets the theme. Availible themes: light or dark. The light theme is the default. Use false to disable the theme css.
 
 	<script type='text/javascript'>

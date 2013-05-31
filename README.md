@@ -278,7 +278,8 @@ Parent elements are characterized by a subhead in the admin panel navigation. Th
         "type": "parent"
     }
 
-#### Parameters
+**Parameters**
+
 Name | Default | Description
 ------------- | ------------- | ------------- |
 title | required | Descriptive title of the object. This value will be used to identify the object in the admin panel sidebar navigation. Required field.
@@ -296,7 +297,8 @@ The Single object is created in the config.json file. This will create a single 
 		}
 	}
 
-#### Parameters
+**Parameters**
+
 Name | Default | Description
 ------------- | ------------- | ------------- |
 title | required | Descriptive title of the page. This value will be used to identify the object in the admin panel sidebar navigation. Required field.
@@ -317,7 +319,8 @@ The Multiple object is created in the 'config.json' file. This will create a gro
 		}
 	}
 
-#### Parameters
+**Parameters**
+
 Name | Default | Options | Description
 ------------- | ------------- | ------------- | ------------- |
 title | required | | Descriptive title of the object. This value will be used to identify the object in the admin panel sidebar navigation. Required field.
@@ -437,6 +440,7 @@ Creates an instance of the TodayCMS FormBuilder. This will allow end users to cr
     }
 
 **Available Fields**
+
 * Single Line Text
 * Multiple Line Text
 * Dropdown Select
@@ -446,11 +450,13 @@ Creates an instance of the TodayCMS FormBuilder. This will allow end users to cr
 * Email
 
 **Form Actions**
+
 * Redirect to another page
 * Display a message
 * Send to Paypal
 
 **Returns**
+
 See the [[Formbuilder (helper)]]
 
 ### Hidden
@@ -487,7 +493,8 @@ Creates a hidden form field.
     }
 
 
-###Parameters
+**Parameters**
+
 Name | Default | Options | Description
 ------------- | ------------- | ------------- | ------------- |
 default | '' | | string, timestamp | Sets a default value for the hidden field. Timestamp will display current date/time.
@@ -518,7 +525,8 @@ Creates a single image upload field.
 
 Image fields allows you to determine multiple thumbnail/image sizes and cropping techniques.
 
-### Parameters
+**Parameters**
+
 Name | Type | Default | Description
 ------------- | ------------- | ------------- | ------------- |
 width | 1-5000 | Width of the input image | Width of the new image, in pixels
@@ -534,15 +542,16 @@ crop | { x1: integer, y1: integer, x2: integer, y2: integer } | {} | Specify an 
 format | string | Format of the input image | The available formats are `"jpg"`, `"png"`, `"gif"`, and `"tiff"`.
 gravity | string | center | The direction from which the image is to be cropped. The available options are `"center"`, `"top"`, `"bottom"`, `"left"`, and `"right"`. You can also combine options with a hyphen, such as `"bottom-right"`.
 frame | integer | null (all frames) | Use this parameter when dealing with animated GIF files to specify which frame of the GIF is used for the operation. Specify 1 to use the first frame, 2 to use the second, and so on.
-colorspace | string | "" | Sets the image colorspace. For details about the available values, see the [ImageMagick documentation](http://www.imagemagick.org/script/command-line-options.php#colorspace).
+colorspace | string | " " | Sets the image colorspace. For details about the available values, see the [ImageMagick documentation](http://www.imagemagick.org/script/command-line-options.php#colorspace).
 rotation | string / boolean / integer | true | Determines whether the image should be rotated. Set this to true to auto-rotate images that are misrotated, or depend on EXIF rotation settings. You can also set this to an integer to specify the rotation in degrees. You can also specify degrees> to rotate only when the image width exceeds the height (or degrees< if the width must be less than the height). Specify false to disable auto-fixing of misrotated images.
 compress | string | null | Specifies pixel compression for when the image is written. Valid values are None, `"BZip"`, `"Fax"`, `"Group4"`, `"JPEG"`, `"JPEG2000"`, `"Lossless"`, `"LZW"`, `"RLE"`, and `"Zip"`. Compression is disabled by default.
 blur | string | null | Specifies gaussian blur, using a value with the form `{radius}x{sigma}`. The radius value specifies the size of area the operator should look at when spreading pixels, and should typically be either `"0"` or at least two times the sigma value. The sigma value is an approximation of how many pixels the image is "spread"; think of it as the size of the brush used to blur the image. This number is a floating point value, enabling small values like `"0.5"` to be used. For details about how the radius and sigma values affect blurring, see [this example](http://www.imagemagick.org/Usage/blur/blur_montage.jpg).
 
-### Watermark Parameters
+**Watermark Parameters**
+
 Name | Type | Default | Description
 ------------- | ------------- | ------------- | -------------
-watermark_url | string | "" | A url indicating a PNG image to be overlaid above this image.
+watermark_url | string | " " | A url indicating a PNG image to be overlaid above this image.
 watermark_position | string/array | "center" | The position at which the watermark is placed. The available options are `"center"`, `"top"`, `"bottom"`, `"left"`, and `"right"`. You can also combine options, such as `"bottom-right"`. An array of possible values can also be specified, in which case one value will be selected at random, such as `["center","left","bottom-left","bottom-right"]`. _Note that this setting puts the watermark in the specified corner. To use a specific pixel offset for the watermark, you will need to add the padding to the image itself._
 watermark_size | string | "" | The size of the watermark, as a percentage. For example, a value of `"50%"` means that size of the watermark will be 50% of the size of image on which it is placed.
 watermark_resize_strategy | string | "fit" | Available values are `"fit"` and `"stretch"`.
@@ -598,7 +607,8 @@ Creates a repeatable object that can utilize all TodayCMS field types.
         }
     }
 
-### Parameters
+**Parameters**
+
 Name | Default | Options | Description
 ------------- | ------------- | ------------- | ------------- |
 display | '' | | Field name to use as the identifier in the title cell.
@@ -641,7 +651,8 @@ Displays the records from another object in the config. This is commonly used to
         "display": "name"
     }
 
-### Parameters
+**Parameters**
+
 Name | Default | Options | Description
 ------------- | ------------- | ------------- | ------------- |
 options | '' |  | A list of values (object), or reference name for another object in the config.
@@ -698,7 +709,8 @@ Displays a list of the records from another object in the config. This is common
         "display": "name"
     }
 
-### Parameters
+**Parameters**
+
 Name | Default | Options | Description
 ------------- | ------------- | ------------- | ------------- |
 options | '' |  | A list of values (object), or reference name for another object in the config.

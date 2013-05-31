@@ -3,11 +3,12 @@
  * TodayCMS PHP SDK
  * Author: Justin Walsh (justin@todaymade.com)
  * Copyright: (c) 2012 Todaymade
- * Version: 2.0
+ * Version: 2.0.2
  *
  * Changelog:
  * 2.0 New Version
  * 2.0.1 Hide the config debug
+ * 2.0.2 Added the 'id' setter
  ************************************************************************************/
 
  class TodaycmsView {
@@ -115,6 +116,11 @@ class Todaycms {
 		$this->parent = false;
 		$this->filters = array();
 		$this->params = array();
+	}
+
+	public function id($value) {
+		$this->id = $value;
+		return $this;
 	}
 
 	public function key($value) {

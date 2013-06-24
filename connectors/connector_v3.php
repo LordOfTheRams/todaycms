@@ -79,7 +79,7 @@ class Todaycms {
 	private $slug = false;
 	private $parent = false;
 	private $filters = false;
-	private $joins = false;
+	private $joins = array();
 	private $params = array();
 
 	public function __construct($client = '') {
@@ -118,7 +118,7 @@ class Todaycms {
 		$this->slug = false;
 		$this->parent = false;
 		$this->filters = false;
-		$this->joins = false;
+		$this->joins = array();
 		$this->params = array();
 	}
 
@@ -164,7 +164,7 @@ class Todaycms {
 
 	// chainable join calls
 	public function join($foreign_key, $collection) {
-		$this->joins[$key] = $value;
+		$this->joins[$foreign_key] = $collection;
 		$this->param('join', urlencode(json_encode($this->joins)));
 		return $this;
 	}
@@ -241,7 +241,7 @@ class Todaycms {
 		} else {
 			return false;
 		}
-		
+
 	}
 
 	public function single() {
@@ -275,7 +275,7 @@ class Todaycms {
 		} else {
 			return false;
 		}
-		
+
 	}
 
 	private function append_url($data) {
@@ -348,7 +348,7 @@ class Todaycms {
 		$output = curl_exec($ch);
 		$info = curl_getinfo($ch);
 		curl_close($ch);
-		
+
 		return $output;
 	}
 

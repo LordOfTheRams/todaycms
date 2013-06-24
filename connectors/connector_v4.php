@@ -14,6 +14,7 @@
  * - added universal rest_call() that accesses API via curl
  * - added REST actions POST, GET, PUT, DELETE
  * - added sort() and count()
+ * - added join()
  ************************************************************************************/
 
  class TodaycmsView {
@@ -153,6 +154,14 @@ class Todaycms {
 			$sort_obj = json_encode($sort_obj);
 		}
 		$this->param('sort', urlencode($sort_obj));
+		return $this;
+	}
+
+	public function join($join_obj) {
+		if(is_array($join_obj)) {
+			$join_obj = json_encode($join_obj);
+		}
+		$this->param('join', urlencode($join_obj));
 		return $this;
 	}
 

@@ -79,6 +79,7 @@ class Todaycms {
 	private $slug = false;
 	private $parent = false;
 	private $filters = false;
+	private $joins = false;
 	private $params = array();
 
 	public function __construct($client = '') {
@@ -117,6 +118,7 @@ class Todaycms {
 		$this->slug = false;
 		$this->parent = false;
 		$this->filters = false;
+		$this->joins = false;
 		$this->params = array();
 	}
 
@@ -157,6 +159,13 @@ class Todaycms {
 	public function filter($key, $value) {
 		$this->filters[$key] = $value;
 		$this->param('filter', urlencode(json_encode($this->filters)));
+		return $this;
+	}
+
+	// chainable join calls
+	public function join($foreign_key, $collection) {
+		$this->joins[$key] = $value;
+		$this->param('join', urlencode(json_encode($this->joins)));
 		return $this;
 	}
 
@@ -203,17 +212,23 @@ class Todaycms {
 		}
 	}
 
-	public function group() {
-		if ($this->key) {
-			$this->param('key', $this->key);
-		}
-		return $this -> get($this -> api_url . 'parent' . $this->params());
+	public function social($p = false) {
+		throw new Exception('CMS PHP SDK no longer supports the use of ->social() ');
+	}
+
+	public function group($p = false) {
+		throw new Exception('CMS PHP SDK no longer supports the use of ->group() ');
+	}
+
+	public function outline($p = false) {
+		throw new Exception('CMS PHP SDK no longer supports the use of ->outline() ');
 	}
 
 	public function multiple() {
-		// if ($this->key) {
-		// 	$this->param('parent', $this->key);
-		// }
+		// Is key(id) called without a collection?
+		if (is_numeric($this->key) && !$this->parent) {
+			throw new Exception('CMS PHP SDK call to ->key(id) requires a parent collection ');
+		}
 
 		$data = $this -> get($this -> api_url . '/collections/'.$this->key.'?_token='.$this->client . $this->params());
 
@@ -244,6 +259,11 @@ class Todaycms {
 			$collection = $this->parent;
 		} else {
 			$collection = '';
+		}
+
+		// Is key(id) called without a collection?
+		if (is_numeric($this->key) && !$this->parent) {
+			throw new Exception('CMS PHP SDK call to ->key(id) requires a parent collection ');
 		}
 
 		$data = $this -> get($this -> api_url . '/collections/'.$collection.'?_token='.$this->client . $this->params());

@@ -99,7 +99,7 @@ class Todaycms {
 		foreach ($p as $k => $v) {
 			if ($k == 'slug') {
 				$params .= '&slug=' . $v;
-			} elseif {
+			} elseif ($k == 'parent') {
 				$this->parent = $v;
 			} else {
 				$params .= '&' . $k . '=' . $v;

@@ -101,7 +101,7 @@ class Todaycms {
 			}
 			return $data;
 		} else {
-			return false;
+			return array();
 		}
 	}
 

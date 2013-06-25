@@ -4,7 +4,7 @@
  * TodayCMS PHP SDK
  * Author: Justin Walsh (justin@todaymade.com)
  * Copyright: (c) 2012 Todaymade
- * Version: 3.3
+ * Version: 3.4
  *
  * This version of the connector is designed to be a drop in replacement
  * for older sites using the 1.x or 2.x versions of the connector. New projects
@@ -15,6 +15,7 @@
  * 3.1 Deployment version
  * 3.2 Switched to rest_call
  * 3.3 Fixed a broken loop statment
+ * 3.4 Multiple returns empty array
  ************************************************************************************/
 
  class TodaycmsView {
@@ -243,7 +244,7 @@ class Todaycms {
 			}
 			return $data;
 		} else {
-			return false;
+			return array();
 		}
 
 	}

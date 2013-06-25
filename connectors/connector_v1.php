@@ -42,6 +42,17 @@ class Todaycms {
 		$this->config();
 	}
 
+	public function url($pos) {
+		$url = parse_url($_SERVER['REQUEST_URI']);
+		$url = $url['path'];
+		$params = explode('/', trim($url, '/'));
+		if (isset($params[$pos])) {
+			return $params[$pos];
+		} else {
+			return false;
+		}
+	}
+
 	public function reset() {
 		$this->joins = array();
 	}

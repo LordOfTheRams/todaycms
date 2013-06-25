@@ -4,7 +4,7 @@
  * TodayCMS PHP SDK
  * Author: Justin Walsh (justin@todaymade.com)
  * Copyright: (c) 2012 Todaymade
- * Version: 3.1
+ * Version: 3.3
  *
  * This version of the connector is designed to be a drop in replacement
  * for older sites using the 1.x or 2.x versions of the connector. New projects
@@ -14,6 +14,7 @@
  * 3.0 New Node API Version
  * 3.1 Deployment version
  * 3.2 Switched to rest_call
+ * 3.3 Fixed a broken loop statment
  ************************************************************************************/
 
  class TodaycmsView {
@@ -235,7 +236,8 @@ class Todaycms {
 		$data = $this -> get($this -> api_url . '/collections/'.$this->key.'?_token='.$this->client . $this->params());
 
 		if ($data) {
-			for ($i=0; $i<count($data); $i++) {
+			foreach($data as $i => $val) {
+			//for ($i=0; $i<count($data); $i++) {
 				$data[$i] = $this->append_url($data[$i]);
 				$data[$i] = $this->append_title($data[$i]);
 			}

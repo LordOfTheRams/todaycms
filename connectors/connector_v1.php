@@ -130,8 +130,7 @@ class Todaycms {
 	}
 
 	public function save($type, $data) {
-		$url = 'save/' . $type;
-		return $this -> post($url, $data);
+		throw new Exception('CMS PHP SDK no longer supports ->save() ');
 	}
 
 	public function outline() {

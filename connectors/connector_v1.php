@@ -18,10 +18,11 @@
 
 class Todaycms {
 	public $client = '';
-	private $api_url = 'http://todaycms-api.herokuapp.com/';
+	private $api_url = 'http://todaycms-api.herokuapp.com';
 	private $debug = false;
 	private $config = false;
 	private $formbuilder_init = false;
+	private $joins = array();
 
 	public function __construct($client = '') {
 		$this -> client = $client;
@@ -41,10 +42,14 @@ class Todaycms {
 		$this->config();
 	}
 
+	public function reset() {
+		$this->joins = array();
+	}
+
 	public function config($key = false) {
 		if (empty($this->config)) {
-			$url = 'config';
-			$this -> config = $this -> get($this -> api_url . $url);
+			$url = '/config';
+			$this -> config = $this -> get($this -> api_url . $url.'?_token='.$this->client);
 		};
 
 		if ($key) {
@@ -52,6 +57,12 @@ class Todaycms {
 		} else {
 			return $this->config;
 		}
+	}
+
+	// chainable join calls
+	public function join($foreign_key, $collection) {
+		$this->joins[$foreign_key] = $collection;
+		return $this;
 	}
 
 	public function parent($key) {
@@ -67,7 +78,7 @@ class Todaycms {
 				foreach ($v as $field => $value) {
 					$filters[$field] = $value;
 				}
-				$params .= '&filter='. urlencode(json_encode(($filters)));
+				$params .= '&filter='. urlencode(json_encode($filters));
 			} else {
 				$params .= '&' . $k . '=' . $v;
 			}
@@ -75,7 +86,13 @@ class Todaycms {
 		// Collection
 		$collection = $parent;
 
-		$data = $this -> get($this->api_url.'/collections/'.$collection.'?_token='.$this->client . $params);
+		$url = $this->api_url.'/collections/'.$collection.'?_token='.$this->client . $params;
+
+		if (!empty($this->joins)) {
+			$url .= '&join='.urlencode(json_encode($this->joins));
+		}
+
+		$data = $this -> get($url);
 
 		if ($data) {
 			for ($i=0; $i<count($data); $i++) {
@@ -124,6 +141,10 @@ class Todaycms {
 
 		$url .= '?_token='.$this->client . $params;
 
+		if (!empty($this->joins)) {
+			$url .= '&join='.urlencode(json_encode($this->joins));
+		}
+
 		$data = $this -> get($url);
 
 		if ($data) {
@@ -164,35 +185,51 @@ class Todaycms {
 	}
 
 	private function get($url) {
-		$data = json_decode(file_get_contents($url), true);
+		return $this->rest_call($url, 'get');
+	}
+
+	private function post($url, $data) {
+		return $this->rest_call($url, 'post', $data);
+	}
+
+	private function rest_call($url, $verb, $data = false) {
+		$this->reset();
+		// check for valid verb
+		$verb = strtoupper($verb);
+		$valid_verbs = array('POST', 'GET', 'PUT', 'DELETE');
+		if (!in_array($verb, $valid_verbs)) {
+			return false;
+		}
+
+		$ch = curl_init();
+		curl_setopt($ch, CURLOPT_URL, $url);
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+		curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $verb);
+		if ($data) {
+			$data = http_build_query($data);
+			curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+		}
+
+		$output = curl_exec($ch);
+		$info = curl_getinfo($ch);
+		curl_close($ch);
+		$data = json_decode($output, true);
+
 		if ($this -> debug) {
 			echo '<div style="background-color:white;"><pre>';
 			echo $url . '<br>';
 			print_r($data);
 			echo '</pre></div>';
 		}
-		return $data;
-	}
 
-	private function post($url, $data) {
-		$url = $this -> api_url . $url;
-		$data = array('data' => serialize($data));
-		$ch = curl_init();
-		curl_setopt($ch, CURLOPT_URL, $url);
-		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-		curl_setopt($ch, CURLOPT_POST, true);
-		curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
-		$output = curl_exec($ch);
-		$info = curl_getinfo($ch);
-		curl_close($ch);
-		return $output;
+		return $data;
 	}
 
 	/** Helper methods to fill missing data (no longer automatically added by API)
 	************************************************************************************/
 
 	private function append_url($data) {
-		if ($data['status'] == 3) {
+		if (isset($data['fields']['link'])) {
 			// Link Page
 			$data['url'] = $data['fields']['link'];
             $data['url_target'] = $data['fields']['target'];

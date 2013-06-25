@@ -18,8 +18,7 @@
 
 class Todaycms {
 	public $client = '';
-	private $server = 'http://launch.todaymade.com';
-	private $api_url = 'http://todaycms-api.herokuapp.com';
+	private $api_url = 'http://todaycms-api.herokuapp.com/';
 	private $debug = false;
 	private $config = false;
 	private $formbuilder_init = false;
@@ -37,10 +36,6 @@ class Todaycms {
 		// Debug
 		if (isset($_GET['debug'])) {
 			$this -> debug = true;
-		}
-		//	Staging Server
-		if (isset($_GET['stage'])) {
-			$this -> server = 'http://stage.todaymade.com';
 		}
 
 		$this->config();
@@ -96,11 +91,20 @@ class Todaycms {
 	public function single($p) {
 		// Params
 		$params = '';
+		$id = false;
 		foreach ($p as $k => $v) {
 			if ($k == 'slug') {
 				$params .= '&slug=' . $v;
 			} elseif ($k == 'parent') {
 				$this->parent = $v;
+			} elseif ($k == 'key') {
+				if (is_numeric($v)) {
+					$id = $v;
+				} else {
+					$this->parent = $v;
+				}
+			} elseif ($k == 'id') {
+				$id = $v;
 			} else {
 				$params .= '&' . $k . '=' . $v;
 			}
@@ -112,7 +116,15 @@ class Todaycms {
 			$collection = $this->parent;
 		}
 
-		$data = $this -> get($this->api_url.'/collections/'.$collection.'?_token='.$this->client . $params);
+		$url = $this->api_url.'/collections/'.$collection;
+
+		if ($id) {
+			$url .= '/'.$id;
+		}
+
+		$url .= '?_token='.$this->client . $params;
+
+		$data = $this -> get($url);
 
 		if ($data) {
 			$data[0] = $this->append_url($data[0]);
@@ -140,7 +152,6 @@ class Todaycms {
 	public function formbuilder($form = false, $page = false) {
 		if (!$this -> formbuilder_init) {
 			$this -> formbuilder_init = true;
-			//echo '<script type="text/javascript" src="' . $this -> server . '/frontend/formbuilder.js"></script>';
 			echo '<script type="text/javascript" src="http://launch.todaymade.com/frontend/formbuilder.js"></script>';
 		}
 

@@ -1,3 +1,4 @@
+
 <?php
 /*************************************************************************************
  * TodayCMS PHP SDK
@@ -12,6 +13,7 @@
  * Changelog:
  * 3.0 New Node API Version
  * 3.1 Deployment version
+ * 3.2 Switched to rest_call
  ************************************************************************************/
 
  class TodaycmsView {
@@ -318,38 +320,44 @@ class Todaycms {
 	}
 
 	private function get($url) {
-		$data = json_decode(file_get_contents($url), true);
-		if ($this -> debug) {
-			echo '<div style="background-color:white;"><pre>';
-			echo $url . '<br>';
-
-			// Display Filters
-			if ($this->filters) {
-				echo "Filter: " . $this->filters . '<br>';;
-			}
-
-			print_r($data);
-			echo '</pre></div>';
-		}
-		$this->reset();
-
-		return $data;
+		return $this->rest_call($url, 'get');
 	}
 
 	private function post($url, $data) {
+		return $this->rest_call($url, 'post', $data);
+	}
+
+	private function rest_call($url, $verb, $data = false) {
 		$this->reset();
-		$url = $this -> api_url . $url;
-		$data = array('data' => serialize($data));
+		// check for valid verb
+		$verb = strtoupper($verb);
+		$valid_verbs = array('POST', 'GET', 'PUT', 'DELETE');
+		if (!in_array($verb, $valid_verbs)) {
+			return false;
+		}
+
 		$ch = curl_init();
 		curl_setopt($ch, CURLOPT_URL, $url);
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-		curl_setopt($ch, CURLOPT_POST, true);
-		curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+		curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $verb);
+		if ($data) {
+			$data = http_build_query($data);
+			curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+		}
+
 		$output = curl_exec($ch);
 		$info = curl_getinfo($ch);
 		curl_close($ch);
+		$data = json_decode($output, true);
 
-		return $output;
+		if ($this -> debug) {
+			echo '<div style="background-color:white;"><pre>';
+			echo $url . '<br>';
+			print_r($data);
+			echo '</pre></div>';
+		}
+
+		return $data;
 	}
 
 }

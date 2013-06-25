@@ -229,7 +229,7 @@ class Todaycms {
 	************************************************************************************/
 
 	private function append_url($data) {
-		if (isset($data['fields']['link'])) {
+		if (isset($data['fields']['link']) && isset($data['fields']['target'])) {
 			// Link Page
 			$data['url'] = $data['fields']['link'];
             $data['url_target'] = $data['fields']['target'];

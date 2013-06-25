@@ -4,7 +4,7 @@
  * TodayCMS PHP SDK
  * Author: Justin Walsh (justin@todaymade.com)
  * Copyright: (c) 2012 Todaymade
- * Version: 3.0
+ * Version: 3.1
  *
  * This version of the connector is designed to be a drop in replacement
  * for older sites using the 1.x or 2.x versions of the connector. New projects
@@ -12,6 +12,7 @@
  *
  * Changelog:
  * 3.0 New Node API Version
+ * 3.1 Deployment version
  ************************************************************************************/
 
  class TodaycmsView {
@@ -279,7 +280,7 @@ class Todaycms {
 	}
 
 	private function append_url($data) {
-		if ($data['status'] == 3) {
+		if (isset($data['fields']['link'])) {
 			// Link Page
 			$data['url'] = $data['fields']['link'];
             $data['url_target'] = $data['fields']['target'];

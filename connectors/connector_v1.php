@@ -1,6 +1,6 @@
 <?php
 /*
- * Version: 1.8
+ * Version: 1.8.1
  *
  * Changelog:
  * 1.0 Initial release
@@ -14,6 +14,7 @@
  * 1.6.1 Removed the link redirects added in 1.6
  * 1.7 Added config api call
  * 1.8 Integrate with new API
+ * 1.8.1 Added curl timeouts
  */
 
 class Todaycms {
@@ -205,13 +206,17 @@ class Todaycms {
 		curl_setopt($ch, CURLOPT_URL, $url);
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 		curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $verb);
+
+		// Timeouts
+		curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 1);
+		curl_setopt($ch, CURLOPT_TIMEOUT, 3);
+
 		if ($data) {
 			$data = http_build_query($data);
 			curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
 		}
 
 		$output = curl_exec($ch);
-		$info = curl_getinfo($ch);
 		curl_close($ch);
 		$data = json_decode($output, true);
 

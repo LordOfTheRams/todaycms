@@ -4,7 +4,7 @@
  * TodayCMS PHP SDK
  * Author: Justin Walsh (justin@todaymade.com)
  * Copyright: (c) 2012 Todaymade
- * Version: 3.5
+ * Version: 3.6
  *
  * This version of the connector is designed to be a drop in replacement
  * for older sites using the 1.x or 2.x versions of the connector. New projects
@@ -17,6 +17,7 @@
  * 3.3 Fixed a broken loop statment
  * 3.4 Multiple returns empty array
  * 3.5 Fix link/target bug
+ * 3.6 Add curl timeouts
  ************************************************************************************/
 
  class TodaycmsView {
@@ -344,13 +345,17 @@ class Todaycms {
 		curl_setopt($ch, CURLOPT_URL, $url);
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 		curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $verb);
+
+		// Timeouts
+		curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 3);
+		curl_setopt($ch, CURLOPT_TIMEOUT, 3);
+
 		if ($data) {
 			$data = http_build_query($data);
 			curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
 		}
 
 		$output = curl_exec($ch);
-		$info = curl_getinfo($ch);
 		curl_close($ch);
 		$data = json_decode($output, true);
 

@@ -1,6 +1,6 @@
 <?php
 /*
- * Version: 1.8.1
+ * Version: 1.8.2
  *
  * Changelog:
  * 1.0 Initial release
@@ -15,6 +15,7 @@
  * 1.7 Added config api call
  * 1.8 Integrate with new API
  * 1.8.1 Added curl timeouts
+ * 1.8.2 Fixed redirects checking
  */
 
 class Todaycms {
@@ -245,7 +246,7 @@ class Todaycms {
 	************************************************************************************/
 
 	private function append_url($data) {
-		if (isset($data['fields']['link']) && isset($data['fields']['target'])) {
+		if (isset($data['fields']['link']) && isset($data['fields']['target']) && !empty($data['fields']['link'])) {
 			// Link Page
 			$data['url'] = $data['fields']['link'];
             $data['url_target'] = $data['fields']['target'];

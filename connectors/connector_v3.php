@@ -4,7 +4,7 @@
  * TodayCMS PHP SDK
  * Author: Justin Walsh (justin@todaymade.com)
  * Copyright: (c) 2012 Todaymade
- * Version: 3.6
+ * Version: 3.7
  *
  * This version of the connector is designed to be a drop in replacement
  * for older sites using the 1.x or 2.x versions of the connector. New projects
@@ -18,6 +18,7 @@
  * 3.4 Multiple returns empty array
  * 3.5 Fix link/target bug
  * 3.6 Add curl timeouts
+ * 3.7 Fixed redirects checking
  ************************************************************************************/
 
  class TodaycmsView {
@@ -286,7 +287,7 @@ class Todaycms {
 	}
 
 	private function append_url($data) {
-		if (isset($data['fields']['link']) && isset($data['fields']['target'])) {
+		if (isset($data['fields']['link']) && isset($data['fields']['target']) && !empty($data['fields']['link'])) {
 			// Link Page
 			$data['url'] = $data['fields']['link'];
             $data['url_target'] = $data['fields']['target'];

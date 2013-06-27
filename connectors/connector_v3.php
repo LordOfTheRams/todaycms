@@ -1,10 +1,9 @@
-
 <?php
 /*************************************************************************************
  * TodayCMS PHP SDK
  * Author: Justin Walsh (justin@todaymade.com)
  * Copyright: (c) 2012 Todaymade
- * Version: 3.7
+ * Version: 3.8
  *
  * This version of the connector is designed to be a drop in replacement
  * for older sites using the 1.x or 2.x versions of the connector. New projects
@@ -19,6 +18,7 @@
  * 3.5 Fix link/target bug
  * 3.6 Add curl timeouts
  * 3.7 Fixed redirects checking
+ * 3.8 Fixed single using ids and using single/multiple without collection defined
  ************************************************************************************/
 
  class TodaycmsView {
@@ -135,7 +135,11 @@ class Todaycms {
 	}
 
 	public function key($value) {
-		$this->key = $value;
+		if (is_numeric($value)) {
+			$this->id = $value;
+		} else {
+			$this->key = $value;
+		}
 		return $this;
 	}
 
@@ -232,12 +236,21 @@ class Todaycms {
 	}
 
 	public function multiple() {
-		// Is key(id) called without a collection?
-		if (is_numeric($this->key) && !$this->parent) {
-			throw new Exception('CMS PHP SDK call to ->key(id) requires a parent collection ');
+		// Collection
+		if ($this->key) {
+			$collection = $this->key;
+		} elseif ($this->parent) {
+			$collection = $this->parent;
+		} else {
+			$collection = '';
 		}
 
-		$data = $this -> get($this -> api_url . '/collections/'.$this->key.'?_token='.$this->client . $this->params());
+		// Require collection
+		if (empty($collection)) {
+			throw new Exception("CMS PHP SDK multiple call to api requires a parent collection, use ->parent('collection-name')");
+		}
+
+		$data = $this -> get($this -> api_url . '/collections/'.$collection.'?_token='.$this->client . $this->params());
 
 		if ($data) {
 			foreach($data as $i => $val) {
@@ -253,14 +266,11 @@ class Todaycms {
 	}
 
 	public function single() {
-		if ($this->id) {
-			$this->param('id', $this->id);
-		}
 		if ($this->slug) {
 			$this->param('slug', $this->slug);
 		}
 
-		// Collection
+		// Require collection
 		if ($this->key) {
 			$collection = $this->key;
 		} elseif ($this->parent) {
@@ -269,12 +279,19 @@ class Todaycms {
 			$collection = '';
 		}
 
-		// Is key(id) called without a collection?
-		if (is_numeric($this->key) && !$this->parent) {
-			throw new Exception('CMS PHP SDK call to ->key(id) requires a parent collection ');
+		if (empty($collection)) {
+			throw new Exception("CMS PHP SDK single call to api requires a parent collection, use ->parent('collection-name')");
 		}
 
-		$data = $this -> get($this -> api_url . '/collections/'.$collection.'?_token='.$this->client . $this->params());
+		$url = $this -> api_url . '/collections/'.$collection;
+
+		if ($this->id) {
+			$url .= '/'.$this->id;
+		}
+
+		$url .= '?_token='.$this->client . $this->params();
+
+		$data = $this -> get($url);
 
 		if ($data) {
 			$data[0] = $this->append_url($data[0]);

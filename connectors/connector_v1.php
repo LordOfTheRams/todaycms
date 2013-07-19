@@ -1,6 +1,6 @@
 <?php
 /*
- * Version: 1.8.2
+ * Version: 1.8.3
  *
  * Changelog:
  * 1.0 Initial release
@@ -16,6 +16,7 @@
  * 1.8 Integrate with new API
  * 1.8.1 Added curl timeouts
  * 1.8.2 Fixed redirects checking
+ * 1.8.3 Fixed title method
  */
 
 class Todaycms {
@@ -274,7 +275,7 @@ class Todaycms {
 	private function append_title($data) {
 		if (!isset($data['title'])) {
 			$title = '';
-			if (is_string($data['fields'][0])) {
+			if (isset($data['fields']) && isset($data['fields'][0]) && is_string($data['fields'][0])) {
 				$title = $data['fields'][0];
 			} elseif (isset($data['slug'])) {
 				$title = ucfirst(str_replace('-', ' ', $data['slug']));

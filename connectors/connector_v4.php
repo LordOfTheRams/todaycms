@@ -4,7 +4,7 @@
  * TodayCMS PHP SDK
  * Author: Justin Walsh (justin@todaymade.com)
  * Copyright: (c) 2012 Todaymade
- * Version: 4.0
+ * Version: 4.2
  *
  * Changelog:
  * 4.0 New Node API Version
@@ -15,6 +15,7 @@
  * - added REST actions POST, GET, PUT, DELETE
  * - added sort() and count()
  * - added join()
+ * 4.2 Added timeouts to CURL
  ************************************************************************************/
 
  class TodaycmsView {
@@ -284,13 +285,17 @@ class Todaycms {
 		curl_setopt($ch, CURLOPT_URL, $url);
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 		curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $verb);
+
+		// Timeouts
+		curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 3);
+		curl_setopt($ch, CURLOPT_TIMEOUT, 3);
+
 		if ($data) {
 			$data = http_build_query($data);
 			curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
 		}
 
 		$output = curl_exec($ch);
-		$info = curl_getinfo($ch);
 		curl_close($ch);
 		$data = json_decode($output, true);
 

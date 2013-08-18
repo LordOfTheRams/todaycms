@@ -16,6 +16,7 @@
  * - added sort() and count()
  * - added join()
  * 4.2 Added timeouts to CURL
+ * 4.3 Added client-side caching via cache()
  ************************************************************************************/
 
  class TodaycmsView {
@@ -76,6 +77,8 @@ class Todaycms {
 	private $debug = false;
 	private $config = false;
 	private $id = false;
+	private $cache_folder = '_cache';
+	private $cache_time = false;
 	private $params = array();
 
 	public function __construct($client = '') {
@@ -108,6 +111,7 @@ class Todaycms {
 
 	public function reset() {
 		$this->id = false;
+		$this->cache_time = false;
 		$this->params = array();
 	}
 
@@ -126,6 +130,11 @@ class Todaycms {
 
 	public function slug($value) {
 		$this->param('slug', $value);
+		return $this;
+	}
+
+	public function cache($time = 5) {
+		$this->cache_time = $time;
 		return $this;
 	}
 
@@ -238,8 +247,25 @@ class Todaycms {
 	*/
 
 	private function read($collection) {
+		$perform_cache = $this->cache_time;
+		$url = $this->get_api_url($collection);
 
-		return $this -> rest_call ($this->get_api_url($collection), 'get');
+		// Check for data in cache
+		if ($perform_cache) {
+			$data = $this->read_from_cache($url);
+			if ($data) {
+				return $data;
+			}
+		}
+
+		$data = $this -> rest_call ($url, 'get');
+
+		// Write to cache if data is valid
+		if ($perform_cache && $data) {
+			$this->write_to_cache($url, json_encode($data));
+		}
+
+		return $data;
 	}
 
 	public function create($collection, $data) {
@@ -309,5 +335,33 @@ class Todaycms {
 		return $data;
 	}
 
+	private function read_from_cache($url) {
+		$url = md5($url);
+		$folder = $this->cache_folder;
+		$subfolder = substr($url, 0, 2).'/'.substr($url, 2, 2);
+		$file_path = $folder.'/'.$subfolder.'/'.$url.'.txt';
+		$cache_window_floor = time() - $this->cache_time;
+
+		// Is data still in the cache window?
+		if (file_exists($file_path) && filemtime($file_path) >= $cache_window_floor) {
+			$json = file_get_contents($file_path);
+			return json_decode($json, true);
+		} else {
+			return false;
+		}
+	}
+
+	private function write_to_cache($url, $json) {
+		$url = md5($url);
+		$folder = $this->cache_folder;
+		$subfolder = substr($url, 0, 2).'/'.substr($url, 2, 2);
+		$file_path = $folder.'/'.$subfolder.'/'.$url.'.txt';
+
+		if (!file_exists($folder.'/'.$subfolder)) {
+    		mkdir($folder.'/'.$subfolder, 0777, true);
+		}
+
+		return file_put_contents($file_path, $json);
+	}
 }
 ?>

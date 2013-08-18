@@ -4,7 +4,7 @@
  * TodayCMS PHP SDK
  * Author: Justin Walsh (justin@todaymade.com)
  * Copyright: (c) 2012 Todaymade
- * Version: 4.2
+ * Version: 4.3
  *
  * Changelog:
  * 4.0 New Node API Version

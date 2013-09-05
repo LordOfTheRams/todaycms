@@ -17,6 +17,7 @@
  * - added join()
  * 4.2 Added timeouts to CURL
  * 4.3 Added client-side caching via cache()
+ * 4.4 Added curl retry logic
  ************************************************************************************/
 
  class TodaycmsView {
@@ -298,7 +299,7 @@ class Todaycms {
 		}
 	}
 
-	private function rest_call($url, $verb, $data = false) {
+	private function rest_call($url, $verb, $data = false, $retry_count = 0) {
 		$this->reset();
 		// check for valid verb
 		$verb = strtoupper($verb);
@@ -317,22 +318,25 @@ class Todaycms {
 		curl_setopt($ch, CURLOPT_TIMEOUT, 3);
 
 		if ($data) {
-			$data = http_build_query($data);
-			curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+			curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($data));
 		}
 
 		$output = curl_exec($ch);
 		curl_close($ch);
-		$data = json_decode($output, true);
+		$result = json_decode($output, true);
 
 		if ($this -> debug) {
 			echo '<div style="background-color:white;"><pre>';
 			echo $url . '<br>';
-			print_r($data);
+			print_r($result);
 			echo '</pre></div>';
 		}
 
-		return $data;
+		if (!is_array($result) && $retry_count < 2) {
+			return rest_call($url, $verb, $data, $retry_count++);
+		} else {
+		 	return $result;
+		}
 	}
 
 	private function read_from_cache($url) {

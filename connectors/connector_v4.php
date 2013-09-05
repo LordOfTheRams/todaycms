@@ -4,7 +4,7 @@
  * TodayCMS PHP SDK
  * Author: Justin Walsh (justin@todaymade.com)
  * Copyright: (c) 2012 Todaymade
- * Version: 4.3
+ * Version: 4.4
  *
  * Changelog:
  * 4.0 New Node API Version
@@ -21,283 +21,286 @@
  ************************************************************************************/
 
  class TodaycmsView {
- 	private $layout = 'default';
- 	private $views = array();
- 	private $vars = array();
+    private $layout = 'default';
+    private $views = array();
+    private $vars = array();
 
- 	public function layout($file) {
- 		$this->layout = $file;
- 		return $this;
- 	}
+    public function layout($file) {
+        $this->layout = $file;
+        return $this;
+    }
 
- 	public function view($file) {
- 		$this->views[] = $file;
- 		return $this;
- 	}
+    public function view($file) {
+        $this->views[] = $file;
+        return $this;
+    }
 
- 	public function set($key, $val) {
- 		$this->vars[$key] = $val;
- 		return $this;
- 	}
+    public function set($key, $val) {
+        $this->vars[$key] = $val;
+        return $this;
+    }
 
- 	public function render() {
-		header('X-Powered-By: TodayCMS (http://todaymade.com)');
+    public function render() {
+        header('X-Powered-By: TodayCMS (http://todaymade.com)');
 
-		$views = $this->views;
-		$vars = $this->vars;
+        $views = $this->views;
+        $vars = $this->vars;
 
-		if (empty($views)) {
-			$views = 'default';
-		}
+        if (empty($views)) {
+            $views = 'default';
+        }
 
-		$view = function() use ($views, $vars) {
-			foreach ($vars as $key => $value) {
-				$$key = $value;
-			}
+        $view = function() use ($views, $vars) {
+            foreach ($vars as $key => $value) {
+                $$key = $value;
+            }
 
-			if (is_array($views)) {
-				foreach ($views as $v) {
-					include (dirname(__FILE__) . "/views/" . $v . ".php");
-				}
-			} else {
-				include (dirname(__FILE__) . "/views/" . $views . ".php");
-			}
-		};
+            if (is_array($views)) {
+                foreach ($views as $v) {
+                    include (dirname(__FILE__) . "/views/" . $v . ".php");
+                }
+            } else {
+                include (dirname(__FILE__) . "/views/" . $views . ".php");
+            }
+        };
 
-		foreach ($vars as $key => $value) {
-			$$key = $value;
-		}
+        foreach ($vars as $key => $value) {
+            $$key = $value;
+        }
 
-		include (dirname(__FILE__) . "/views/layouts/" . $this->layout . ".php");
- 	}
+        include (dirname(__FILE__) . "/views/layouts/" . $this->layout . ".php");
+    }
  }
 
 class Todaycms {
-	public $client = '';
-	private $api_url = 'http://todaycms-api.herokuapp.com';
-	private $debug = false;
-	private $config = false;
-	private $id = false;
-	private $cache_folder = '_cache';
-	private $cache_time = false;
-	private $params = array();
+    public $client = '';
+    private $api_url = 'http://todaycms-api.herokuapp.com';
+    private $debug = false;
+    private $config = false;
+    private $id = false;
+    private $cache_folder = '_cache';
+    private $cache_time = false;
+    private $params = array();
 
-	public function __construct($client = '') {
-		$this -> client = $client;
+    public function __construct($client = '') {
+        $this -> client = $client;
 
-		// Error
-		if (isset($_GET['error'])) {
-			ini_set('display_errors', 1);
-			ini_set('log_errors', 1);
-			ini_set('error_log', dirname(__FILE__) . '/error_log.txt');
-			error_reporting(E_ALL);
-		}
+        // Error
+        if (isset($_GET['error'])) {
+            ini_set('display_errors', 1);
+            ini_set('log_errors', 1);
+            ini_set('error_log', dirname(__FILE__) . '/error_log.txt');
+            error_reporting(E_ALL);
+        }
 
-		// Debug
-		if (isset($_GET['debug'])) {
-			$this -> debug = true;
-		}
+        // Debug
+        if (isset($_GET['debug'])) {
+            $this -> debug = true;
+        }
 
-		//	Staging Server
-		if (isset($_GET['stage'])) {
-			$this -> api_url = 'http://stage.todaymade.com';
-		}
-	}
+        //  Staging Server
+        if (isset($_GET['stage'])) {
+            $this -> api_url = 'http://stage.todaymade.com';
+        }
+    }
 
-	public function template() {
-		$template = new TodaycmsView();
-		$template->set('cms', $this);
-		return $template;
-	}
+    public function template() {
+        $template = new TodaycmsView();
+        $template->set('cms', $this);
+        return $template;
+    }
 
-	public function reset() {
-		$this->id = false;
-		$this->cache_time = false;
-		$this->params = array();
-	}
+    public function reset() {
+        $this->id = false;
+        $this->cache_time = false;
+        $this->params = array();
+    }
 
-	public function id($value) {
-		$this->id = $value;
-		return $this;
-	}
+    public function id($value) {
+        $this->id = $value;
+        return $this;
+    }
 
-	public function key($value) {
-		throw new Exception('CMS PHP SDK no longer supports the use of ->key() ');
-	}
+    public function key($value) {
+        throw new Exception('CMS PHP SDK no longer supports the use of ->key() ');
+    }
 
-	public function parent($value) {
-		throw new Exception('CMS PHP SDK no longer supports the use of ->parent() ');
-	}
+    public function parent($value) {
+        throw new Exception('CMS PHP SDK no longer supports the use of ->parent() ');
+    }
 
-	public function slug($value) {
-		$this->param('slug', $value);
-		return $this;
-	}
+    public function slug($value) {
+        $this->param('slug', $value);
+        return $this;
+    }
 
-	public function cache($time = 5) {
-		$this->cache_time = $time;
-		return $this;
-	}
+    public function cache($time = 600) {
+        // default to 600 seconds (10 minutes)
+        $this->cache_time = $time;
+        return $this;
+    }
 
-	public function param($key, $value) {
-		$this->params[$key] = $value;
-		return $this;
-	}
+    public function param($key, $value) {
+        $this->params[$key] = $value;
+        return $this;
+    }
 
-	private function params() {
-		$url = '';
-		foreach ($this->params as $k => $v) {
-			$url .= '&' . $k . '=' . $v;
-		}
-		return $url;
-	}
+    private function params() {
+        $url = '';
+        foreach ($this->params as $k => $v) {
+            $url .= '&' . $k . '=' . $v;
+        }
+        return $url;
+    }
 
-	public function filter($filter_obj) {
-		if(is_array($filter_obj)) {
-			$filter_obj = json_encode($filter_obj);
-		}
-		$this->param('filter', urlencode($filter_obj));
-		return $this;
-	}
+    public function filter($filter_obj) {
+        if(is_array($filter_obj)) {
+            $filter_obj = json_encode($filter_obj);
+        }
+        $this->param('filter', urlencode($filter_obj));
+        return $this;
+    }
 
-	public function sort($sort_obj) {
-		if(is_array($sort_obj)) {
-			$sort_obj = json_encode($sort_obj);
-		}
-		$this->param('sort', urlencode($sort_obj));
-		return $this;
-	}
+    public function sort($sort_obj) {
+        if(is_array($sort_obj)) {
+            $sort_obj = json_encode($sort_obj);
+        }
+        $this->param('sort', urlencode($sort_obj));
+        return $this;
+    }
 
-	public function join($join_obj) {
-		if(is_array($join_obj)) {
-			$join_obj = json_encode($join_obj);
-		}
-		$this->param('join', urlencode($join_obj));
-		return $this;
-	}
+    public function join($join_obj) {
+        if(is_array($join_obj)) {
+            $join_obj = json_encode($join_obj);
+        }
+        $this->param('join', urlencode($join_obj));
+        return $this;
+    }
 
-	public function url($pos) {
-		$url = parse_url($_SERVER['REQUEST_URI']);
-		$url = $url['path'];
-		$params = explode('/', trim($url, '/'));
-		if (isset($params[$pos])) {
-			return $params[$pos];
-		} else {
-			return false;
-		}
-	}
+    public function url($pos) {
+        $url = parse_url($_SERVER['REQUEST_URI']);
+        $url = $url['path'];
+        $params = explode('/', trim($url, '/'));
+        if (isset($params[$pos])) {
+            return $params[$pos];
+        } else {
+            return false;
+        }
+    }
 
-	public function config($key = false) {
-		if (empty($this->config)) {
-			$url = '/config';
-			$this -> config = $this -> rest_call($this -> api_url . $url.'?_token='.$this->client, 'get');
-		};
+    public function config($key = false) {
+        if (empty($this->config)) {
+            $url = '/config';
+            $this -> config = $this -> rest_call($this -> api_url . $url.'?_token='.$this->client, 'get');
+        };
 
-		if ($key) {
-			if (isset($this->config[$key])) {
-				return $this->config[$key];
-			} else {
-				return false;
-			}
-		} else {
-			return $this->config;
-		}
-	}
+        if ($key) {
+            if (isset($this->config[$key])) {
+                return $this->config[$key];
+            } else {
+                return false;
+            }
+        } else {
+            return $this->config;
+        }
+    }
 
-	public function single($collection) {
-		$this->param('limit', 1);
+    public function single($collection) {
+        $this->param('limit', 1);
 
-		$data = $this -> read($collection);
+        $data = $this -> read($collection);
 
-		if (isset($data[0]) && !empty($data[0])) {
-			return $data[0];
-		} else {
-			return false;
-		}
-	}
+        if (isset($data[0]) && !empty($data[0])) {
+            return $data[0];
+        } else {
+            return false;
+        }
+    }
 
-	public function multiple($collection) {
-		// multiple is an alias of read
-		return $this -> read($collection);
-	}
+    public function multiple($collection) {
+        // multiple is an alias of read
+        return $this -> read($collection);
+    }
 
-	public function count($collection) {
-		$this->param('count', 'true');
+    public function count($collection) {
+        $this->param('count', 'true');
 
-		$data = $this -> read($collection);
+        $data = $this -> read($collection);
 
-		if (isset($data['count'])) {
-			return $data['count'];
-		} else {
-			return false;
-		}
-		//return $this -> read($collection);
-	}
+        if (isset($data['count'])) {
+            return $data['count'];
+        } else {
+            return false;
+        }
+        //return $this -> read($collection);
+    }
 
-	public function get_api_url($collection) {
-		$url = $this -> api_url . '/collections/'.$collection;
-		if ($this->id) {
-			$url .= '/'.$this->id;
-		}
+    public function get_api_url($collection) {
+        $url = $this -> api_url . '/collections/'.$collection;
+        if ($this->id) {
+            $url .= '/'.$this->id;
+        }
 
-		return $url .'?_token='.$this->client . $this->params();
-	}
+        return $url .'?_token='.$this->client . $this->params();
+    }
 
-	/*
-	* API calls
-	*/
+    /*
+    * API calls
+    */
 
-	private function read($collection) {
-		$perform_cache = $this->cache_time;
-		$url = $this->get_api_url($collection);
+    private function read($collection) {
+        $perform_cache = $this->cache_time;
+        $url = $this->get_api_url($collection);
 
-		// Check for data in cache
-		if ($perform_cache) {
-			$data = $this->read_from_cache($url);
-			if ($data) {
-				return $data;
-			}
-		}
+        // Check for data in cache
+        if ($perform_cache) {
+            $data = $this->read_from_cache($url);
+            if ($data) {
+                // Manually reset params
+                $this->reset();
+                return $data;
+            }
+        }
 
-		$data = $this -> rest_call ($url, 'get');
+        $data = $this -> rest_call ($url, 'get');
 
-		// Write to cache if data is valid
-		if ($perform_cache && $data) {
-			$this->write_to_cache($url, json_encode($data));
-		}
+        // Write to cache if data is valid
+        if ($perform_cache && $data) {
+            $this->write_to_cache($url, json_encode($data));
+        }
 
-		return $data;
-	}
+        return $data;
+    }
 
-	public function create($collection, $data) {
-		$data = $this -> rest_call ($this->get_api_url($collection), 'post', $data);
+    public function create($collection, $data) {
+        $data = $this -> rest_call ($this->get_api_url($collection), 'post', $data);
 
-		if (!empty($data)) {
-			return $data;
-		} else {
-			return false;
-		}
-	}
+        if (!empty($data)) {
+            return $data;
+        } else {
+            return false;
+        }
+    }
 
-	public function update($collection, $data) {
-		$data = $this -> rest_call ($this->get_api_url($collection), 'put', $data);
+    public function update($collection, $data) {
+        $data = $this -> rest_call ($this->get_api_url($collection), 'put', $data);
 
-		if (!empty($data)) {
-			return $data;
-		} else {
-			return false;
-		}
-	}
+        if (!empty($data)) {
+            return $data;
+        } else {
+            return false;
+        }
+    }
 
-	public function delete($collection) {
-		$data = $this -> rest_call ($this->get_api_url($collection), 'delete');
+    public function delete($collection) {
+        $data = $this -> rest_call ($this->get_api_url($collection), 'delete');
 
-		if (!empty($data)) {
-			return $data;
-		} else {
-			return false;
-		}
-	}
+        if (!empty($data)) {
+            return $data;
+        } else {
+            return false;
+        }
+    }
 
 	private function rest_call($url, $verb, $data = false, $retry_count = 0) {
 		$this->reset();
@@ -308,16 +311,16 @@ class Todaycms {
 			return false;
 		}
 
-		$ch = curl_init();
-		curl_setopt($ch, CURLOPT_URL, $url);
-		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-		curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $verb);
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $verb);
 
-		// Timeouts
-		curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 3);
-		curl_setopt($ch, CURLOPT_TIMEOUT, 3);
+        // Timeouts
+        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 3);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 3);
 
-		if ($data) {
+        if ($data) {
 			curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($data));
 		}
 
@@ -337,35 +340,37 @@ class Todaycms {
 		} else {
 		 	return $result;
 		}
-	}
+    }
 
-	private function read_from_cache($url) {
-		$url = md5($url);
-		$folder = $this->cache_folder;
-		$subfolder = substr($url, 0, 2).'/'.substr($url, 2, 2);
-		$file_path = $folder.'/'.$subfolder.'/'.$url.'.txt';
-		$cache_window_floor = time() - $this->cache_time;
+    private function read_from_cache($url) {
+        $url = md5($url);
+        $folder = $this->cache_folder;
+        $subfolder = substr($url, 0, 1).'/'.substr($url, 1, 1);
+        $file_path = $folder.'/'.$subfolder.'/'.$url.'.txt';
+        $cache_window_floor = time() - $this->cache_time;
 
-		// Is data still in the cache window?
-		if (file_exists($file_path) && filemtime($file_path) >= $cache_window_floor) {
-			$json = file_get_contents($file_path);
-			return json_decode($json, true);
-		} else {
-			return false;
-		}
-	}
+        // Is data still in the cache window?
+        if (file_exists($file_path) && filemtime($file_path) >= $cache_window_floor) {
+            $json = file_get_contents($file_path);
+            return json_decode($json, true);
+        } else {
+            return false;
+        }
+    }
 
-	private function write_to_cache($url, $json) {
-		$url = md5($url);
-		$folder = $this->cache_folder;
-		$subfolder = substr($url, 0, 2).'/'.substr($url, 2, 2);
-		$file_path = $folder.'/'.$subfolder.'/'.$url.'.txt';
+    private function write_to_cache($url, $json) {
+        $url = md5($url);
+        $folder = $this->cache_folder;
+        $subfolder = substr($url, 0, 1).'/'.substr($url, 1, 1);
+        $file_path = $folder.'/'.$subfolder.'/'.$url.'.txt';
 
-		if (!file_exists($folder.'/'.$subfolder)) {
-    		mkdir($folder.'/'.$subfolder, 0777, true);
-		}
+        // If no folder exists, create one with zero permissions
+        // for non-owners
+        if (!file_exists($folder.'/'.$subfolder)) {
+            mkdir($folder.'/'.$subfolder, 0600, true);
+        }
 
-		return file_put_contents($file_path, $json);
-	}
+        return file_put_contents($file_path, $json);
+    }
 }
 ?>

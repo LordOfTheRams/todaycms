@@ -4,7 +4,7 @@
  * TodayCMS PHP SDK
  * Author: Justin Walsh (justin@todaymade.com)
  * Copyright: (c) 2012 Todaymade
- * Version: 4.4
+ * Version: 4.4.1
  *
  * Changelog:
  * 4.0 New Node API Version
@@ -18,6 +18,7 @@
  * 4.2 Added timeouts to CURL
  * 4.3 Added client-side caching via cache()
  * 4.4 Added curl retry logic
+ * 4.4.1 Fix the retry logic
  ************************************************************************************/
 
  class TodaycmsView {
@@ -302,14 +303,14 @@ class Todaycms {
         }
     }
 
-	private function rest_call($url, $verb, $data = false, $retry_count = 0) {
-		$this->reset();
-		// check for valid verb
-		$verb = strtoupper($verb);
-		$valid_verbs = array('POST', 'GET', 'PUT', 'DELETE');
-		if (!in_array($verb, $valid_verbs)) {
-			return false;
-		}
+    private function rest_call($url, $verb, $data = false, $retry_count = 0) {
+        $this->reset();
+        // check for valid verb
+        $verb = strtoupper($verb);
+        $valid_verbs = array('POST', 'GET', 'PUT', 'DELETE');
+        if (!in_array($verb, $valid_verbs)) {
+            return false;
+        }
 
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $url);
@@ -321,25 +322,25 @@ class Todaycms {
         curl_setopt($ch, CURLOPT_TIMEOUT, 3);
 
         if ($data) {
-			curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($data));
-		}
+            curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($data));
+        }
 
-		$output = curl_exec($ch);
-		curl_close($ch);
-		$result = json_decode($output, true);
+        $output = curl_exec($ch);
+        curl_close($ch);
+        $result = json_decode($output, true);
 
-		if ($this -> debug) {
-			echo '<div style="background-color:white;"><pre>';
-			echo $url . '<br>';
-			print_r($result);
-			echo '</pre></div>';
-		}
+        if ($this -> debug) {
+            echo '<div style="background-color:white;"><pre>';
+            echo $url . '<br>';
+            print_r($result);
+            echo '</pre></div>';
+        }
 
-		if (!is_array($result) && $retry_count < 2) {
-			return rest_call($url, $verb, $data, $retry_count++);
-		} else {
-		 	return $result;
-		}
+        if (!is_array($result) && $retry_count < 2) {
+            return $this -> rest_call($url, $verb, $data, $retry_count++);
+        } else {
+            return $result;
+        }
     }
 
     private function read_from_cache($url) {

@@ -206,41 +206,44 @@ class Todaycms {
 		return $this->rest_call($url, 'post', $data);
 	}
 
-	private function rest_call($url, $verb, $data = false) {
-		$this->reset();
-		// check for valid verb
-		$verb = strtoupper($verb);
-		$valid_verbs = array('POST', 'GET', 'PUT', 'DELETE');
-		if (!in_array($verb, $valid_verbs)) {
-			return false;
-		}
+	private function rest_call($url, $verb, $data = false, $retry_count = 0) {
+	    $this->reset();
+	    // check for valid verb
+	    $verb = strtoupper($verb);
+	    $valid_verbs = array('POST', 'GET', 'PUT', 'DELETE');
+	    if (!in_array($verb, $valid_verbs)) {
+	        return false;
+	    }
 
-		$ch = curl_init();
-		curl_setopt($ch, CURLOPT_URL, $url);
-		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-		curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $verb);
+	    $ch = curl_init();
+	    curl_setopt($ch, CURLOPT_URL, $url);
+	    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+	    curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $verb);
 
-		// Timeouts
-		curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 1);
-		curl_setopt($ch, CURLOPT_TIMEOUT, 3);
+	    // Timeouts
+	    curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 3);
+	    curl_setopt($ch, CURLOPT_TIMEOUT, 3);
 
-		if ($data) {
-			$data = http_build_query($data);
-			curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
-		}
+	    if ($data) {
+	        curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($data));
+	    }
 
-		$output = curl_exec($ch);
-		curl_close($ch);
-		$data = json_decode($output, true);
+	    $output = curl_exec($ch);
+	    curl_close($ch);
+	    $result = json_decode($output, true);
 
-		if ($this -> debug) {
-			echo '<div style="background-color:white;"><pre>';
-			echo $url . '<br>';
-			print_r($data);
-			echo '</pre></div>';
-		}
+	    if ($this -> debug) {
+	        echo '<div style="background-color:white;"><pre>';
+	        echo $url . '<br>';
+	        print_r($result);
+	        echo '</pre></div>';
+	    }
 
-		return $data;
+	    if (!is_array($result) && $retry_count < 2) {
+	        return $this -> rest_call($url, $verb, $data, $retry_count++);
+	    } else {
+	        return $result;
+	    }
 	}
 
 	/** Helper methods to fill missing data (no longer automatically added by API)

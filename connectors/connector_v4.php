@@ -336,8 +336,9 @@ class Todaycms {
             echo '</pre></div>';
         }
 
+        // Retry logic
         if (!is_array($result) && $retry_count < 2) {
-            return $this -> rest_call($url, $verb, $data, $retry_count++);
+            return $this -> rest_call($url, $verb, $data, ++$retry_count);
         } else {
             return $result;
         }
